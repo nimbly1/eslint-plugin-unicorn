@@ -21,6 +21,14 @@ test.snapshot({
 		'void (async () => {})()',
 		'void async function() {}()',
 		'void (async () => {})().catch(handleError)',
+		// Caching the promise on a property, same as `const promise = (async () => {})()`
+		'something.promise = (async () => {})()',
+		'something["promise"] = (async () => {})()',
+		'something.promise ??= (async () => {})()',
+		{
+			code: 'something.promise = (async () => {})() as Promise<void>',
+			languageOptions: {parser: parsers.typescript},
+		},
 	],
 	invalid: [
 		'(async () => {})()',
@@ -108,6 +116,9 @@ test.snapshot({
 		'const promise = foo.then(bar)',
 		'const promise = foo.catch(bar)',
 		'const promise = foo.finally(bar)',
+		'something.promise = foo.then(bar)',
+		'something["promise"] = foo.catch(bar)',
+		'something.promise ??= foo.finally(bar)',
 		'const promise = foo?.then?.(bar)',
 		{
 			code: outdent`

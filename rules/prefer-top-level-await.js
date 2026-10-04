@@ -159,6 +159,14 @@ const isVariableDeclaratorInitializer = node => {
 	return node.parent.type === 'VariableDeclarator' && node.parent.init === node;
 };
 
+// `something.promise = (async () => {})()` caches the promise, like a variable initializer.
+const isPropertyAssignmentRightHandSide = node => {
+	node = getOutermostTransparentExpression(node);
+	return node.parent.type === 'AssignmentExpression'
+		&& node.parent.right === node
+		&& node.parent.left.type === 'MemberExpression';
+};
+
 const isArrayElementWrapper = node => (
 	(node.parent.type === 'ChainExpression' && node.parent.expression === node)
 	|| (
@@ -229,6 +237,7 @@ const shouldIgnoreCallExpression = node =>
 	|| isPromiseMethodCalleeObject(node)
 	|| isAwaitExpressionArgument(node)
 	|| isVariableDeclaratorInitializer(node)
+	|| isPropertyAssignmentRightHandSide(node)
 	|| isInPromiseMethods(node);
 
 /**

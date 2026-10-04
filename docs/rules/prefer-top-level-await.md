@@ -69,4 +69,15 @@ export async function doSomething() {
 }
 ```
 
+Assigning that promise to a property is allowed for the same reason:
+
+```js
+// ✅
+something.promise = prepareSomething();
+
+export async function doSomething() {
+	await something.promise;
+}
+```
+
 `.cjs` and `.svelte` files are ignored.
